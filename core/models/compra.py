@@ -1,6 +1,7 @@
 from django.db import models
 
 from .user import User
+from .livro import Livro
 
 class Compra(models.Model):
     class StatusCompra(models.IntegerChoices):
@@ -13,3 +14,8 @@ class Compra(models.Model):
     status = models.IntegerField(choices=StatusCompra.choices,  default=StatusCompra.CARRINHO)
 def __str__(self):
         return f'{self.usuario} ({self.status})'
+
+class ItensCompra(models.Model):
+    compra = models.ForeignKey(Compra, on_delete=models.CASCADE, related_name="itens")
+    livro = models.ForeignKey(Livro, on_delete=models.PROTECT, related_name="+")
+    quantidade = models.IntegerField(default=1)
