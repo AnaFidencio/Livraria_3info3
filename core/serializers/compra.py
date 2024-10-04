@@ -9,6 +9,7 @@ from rest_framework.serializers import (
     HiddenField, # novo
     ModelSerializer,
     SerializerMethodField,
+    ValidationError,
 )
 class ItensCompraSerializer(ModelSerializer):
     total = SerializerMethodField()
@@ -25,7 +26,11 @@ class CriarEditarItensCompraSerializer(ModelSerializer):
     class Meta:
         model = ItensCompra
         fields = ("livro", "quantidade") 
-        usuario = HiddenField(default=CurrentUserDefault())       
+        usuario = HiddenField(default=CurrentUserDefault())   
+    def validate(self, item):
+        if item["quantidade"] > item["livro"].quantidade:
+            raise ValidationError("Quantidade de itens maior do que a quantidade em estoque.")
+        return item    
 
 class CompraSerializer(ModelSerializer):
     usuario = CharField(source="usuario.email", read_only=True)
